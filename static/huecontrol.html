@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+<style>
+.slidecontainer {
+  width: 100%;
+}
+
+.slider {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 25px;
+  background: #d3d3d3;
+  outline: none;
+  opacity: 0.7;
+  -webkit-transition: .2s;
+  transition: opacity .2s;
+}
+
+.slider:hover {
+  opacity: 1;
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 25px;
+  height: 25px;
+  background: #4CAF50;
+  cursor: pointer;
+}
+
+.slider::-moz-range-thumb {
+  width: 25px;
+  height: 25px;
+  background: #4CAF50;
+  cursor: pointer;
+}
+
+.colorPickBox {
+    display:inline-block;
+    float:left;
+    width:50px;
+    height:50px;
+}
+</style>
+</head>
+<body>
+
+<h1>LED Hue control</h1>
+<div id="colorbox" class="colorPickBox" style="background-color:blue;"></br></div>
+<p>Value: <span id="value"></span></p></p>
+<div class="slidecontainer" width=700px>
+  <input id="slider" type="range" min="0" max="1" value="0.5" step="0.01">
+</div>
+
+  <script>
+    var slider = document.getElementById("slider");
+    var output = document.getElementById("value");
+    output.innerHTML = slider.value;
+
+    slider.oninput = function() {
+      output.innerHTML = this.value;
+
+        $.ajax({
+            type : "POST",
+            url : 'http://localhost:5000/hue',
+            ContentType: 'application/json',
+            data: { 'hue' : slider.value }, 
+            success: function (data) {
+                $("#colorbox").css("background-color", 'rgb(' + data["r"] + ',' + data["g"] + ',' + data["b"] + ')');
+                }
+            });       
+    }
+    </script>
+
+
+</br></br>
+<h3>Press button to colorflow LED</h3>
+<form id="myform" action="">
+    <input type="submit" value="flow"/>
+</form>
+
+<script>
+    $('#myform').submit(function(e){
+    e.preventDefault();
+    $.ajax({
+        url: 'http://localhost:5000/hueflow',
+        type: 'post',
+    });
+});
+</script>
+</form>
+</body>
+</html>
